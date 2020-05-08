@@ -12,28 +12,6 @@
 
 #define PORT 5990
 
-int NbLinesInHistory(){
-	FILE *fp; 
-	int count = 0;  // Line counter (result) 
-	char c;
-	fp = fopen("history.txt", "r"); 
-  
-	// Check if file exists 
-	if (fp == NULL) 
-	{ 
-	perror("Open of history"); 
-	return 0; 
-	} 
-
-	// Extract characters from file and store in character c 
-	for (c = getc(fp); c != EOF; c = getc(fp)) 
-	if (c == '\n') // Increment count if this character is newline 
-	count = count + 1; 
-
-	// Close the file 
-	fclose(fp); 
-	return count;
-}
 
 int getLastLinesInHistory(){
 	char tmp[1024];
@@ -43,7 +21,6 @@ int getLastLinesInHistory(){
 	while(!feof(fp))
 	    fgets(tmp, 1024, fp);
 
-	printf("Fyn A fDP C'EST LAAAAAAAAAAAAAAAAAAAAAAAA DERNIÈRE LIGNE\n%s", tmp);
 	char * strToken = strtok (tmp," ");
 	int * x;
 	sscanf(strToken, "%d", &x);

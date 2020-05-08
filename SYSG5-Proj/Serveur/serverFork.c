@@ -10,7 +10,6 @@
 
 
 int main(int argc, char * argv[]){
-// sudo rcSuSEfirewall2 stop
 	if(argc != 2){
 		printf("Do not forget to enter the addres !\n");
 		exit(0);
@@ -21,6 +20,10 @@ int main(int argc, char * argv[]){
 	socklen_t addr_size;
 	char uip [100];
 	pid_t childpid;
+	
+
+
+	system("sudo -S rcSuSEfirewall2 stop"); //Désactivation du firewall
 
 	sockfd = socket(PF_INET, SOCK_STREAM, 0);
 	if(sockfd < 0){

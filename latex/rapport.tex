@@ -25,7 +25,7 @@ literate={â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
 {à}{{\`a}}1 {é}{{\'e}}1 {è}{{\`e}}1 {ù}{{\`u}}1
 {Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
 {Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
-{À}{{\`A}}1 {É}{{\'E}}1 {È}{{\`E}}1 {Ù}{{\`U}}1,
+{À}{{\`A}}1 {É}{{\'E}}1 {È}{{\`E}}1 {Ù}{{\`U}}1,breaklines=true
 commentstyle=\scriptsize\ttfamily\slshape, % style des commentaires
 basicstyle=\scriptsize\ttfamily, % style par défaut
 keywordstyle=\scriptsize\rmfamily\bfseries,% style des mots-clés
@@ -58,12 +58,44 @@ L'objectif de ce travail est de créer une application client/serveur afin que p
 Pour ce faire, il faudra lancer un serveur sur une machine, et au minimum un client sur une autre machine. Pour ce travail, c'est par la librairie socket que l'on passe pour permettre cette connexion.
 
 
-\includegraphics[width=115mm]{./resources/socket.jpg}
+\includegraphics[width=90mm]{../resources/socket.jpg}
+
+\begin{itemize}
+    \item $\textbf{création de socket}$ : 
+      \begin{lstlisting} 
+      int sockfd = socket(domain, type, protocol)
+      \end{lstlisting}
+      \begin{itemize}
+                  \item $domain$ : domaine de communication par exemple  AF\_INET (protocole IPv4)  AF\_INET6 (protocole IPv6)
+                  \item $type$ : type de communication (SOCK\_DGRAM pour du UDP ou SOCK\_STREAM pour du TCP)
+                  \item $protocol$ : la valeur du protocole IP qui est toujours 0
+      \end{itemize}
+    \item $\textbf{bind}$ : 
+      \begin{lstlisting} 
+      int bind(int sockfd, const struct sockaddr_in *addr, socklen_t addrlen);
+      \end{lstlisting}
+      Après la création du socket, la fonction bind lie le socket à l'adresse et au numéro de port spécifiés dans addr (structure de données personnalisée).
+    \item $\textbf{listen}$ : 
+      \begin{lstlisting} 
+      int listen(int sockfd, int backlog);
+      \end{lstlisting}
+      Grâce à l'appel system listen, on va placer la socket dans un mode passif où il attend que les clients se connectent. Le backlog est la nombre maximum de client pouvant se connecter simultanément au serveur (backlog est la file d'attente des demandes de connexions).
+    \item $\textbf{accept}$ : 
+      \begin{lstlisting} 
+      int new_socket= accept(int sockfd, struct sockaddr_in *addr, socklen_t *addrlen);
+      \end{lstlisting}
+      Il traite la première demande de connexion dans la file d'attente des connexions en attente pour le socket d'écoute, sockfd, crée un nouveau socket connecté et renvoie un nouveau descripteur de fichier faisant référence à ce socket. À ce stade, la connexion est établie entre le client et le serveur et ils sont prêts à communiquer.
+      \item $\textbf{connect}(coté~client)$ : 
+      \begin{lstlisting} 
+      int connect(int sockfd, const struct sockaddr_in *addr, socklen_t addrlen);
+      \end{lstlisting}
+      L'appel système connect() connecte le socket référencé par le descripteur de fichier sockfd à l'adresse spécifiée par addr. L'adresse et le port du serveur sont spécifiés dans sockaddr\_in (sockaddr\_in est structure de base pour tous les appels système et les fonctions qui traitent des adresses Internet).
+\end{itemize}
 
 \section{Appel system fork}
 Pour pouvoir assurer la connection avec plusieurs utilisateurs simultanement, on utilise l'appel system fork. De ce fait, nous allons pouvoir dupliquer autant de fois le process qu'il n'y a d'utilisateurs et ainsi leur permettre d'agir "en même temps" tout en ayant un seul et unique serveur.
 
-\includegraphics[width=115mm]{./resources/socketFork.jpg}
+\includegraphics[width=115mm]{../resources/socketFork.jpg}
 
 \subsection{Comment ca marche ?}
 L'appel système fork retorune une valeur entière. Pour pouvoir différencier le processus pere du fils il faut regarder la valeur du fork. Si cette valeur est nulle, c'est que nous sommes dans le processus fils, sinon la valeur est égale au pid du fils au quel cas nous sommes dans le processus père.
@@ -94,7 +126,7 @@ fin de processus
 \chapter{Serveur}
 \textbf{} 
 \section{Code source}
-\lstinputlisting[inputencoding=utf8/latin1]{./SYSG5-Proj/serverFork.c}
+\lstinputlisting[inputencoding=utf8/latin1]{../SYSG5-Proj/serverFork.c}
 \subsection{Variables}
 \begin{itemize}
             \item $serverAddr$ : représente la structure sockaddr\_in contenant les informations du serveur
@@ -127,7 +159,7 @@ Comme expliqué précédemment, en vérifiant que le retour de l'appel systeme f
 
 \chapter{Client}
 \section{Code source}
-\lstinputlisting[inputencoding=utf8/latin1]{./SYSG5-Proj/clientFork.c}
+\lstinputlisting[inputencoding=utf8/latin1]{../SYSG5-Proj/clientFork.c}
 \subsection{Variables}
 \begin{itemize}
             \item $serverAddr$ : représente la structure sockaddr\_in contenant les informations du serveur
@@ -146,8 +178,9 @@ Une fois le socket créé, il faut le connecter. Cela se fait grâce à la fonct
 	Si connect retourne -1, c'est que la connection à échouer. Grâce à perror, on peut en savoir la cause exact.
 \subsection{Commandes}
 
-\includegraphics[width=115mm]{./resources/commandes.png}
+\includegraphics[width=115mm]{../resources/commandes.png}
 
+La console attend donc un message du client pour l'envoyer au serveur. La console de lit que le premier mot.
 \begin{enumerate}
   \item :history permet d'envoyer son historique
   \item :exit permet de se seconnecter
@@ -156,7 +189,7 @@ Une fois le socket créé, il faut le connecter. Cela se fait grâce à la fonct
 \subsection{client.sh}
 
 C'est un script qui charge les n dernières commandes tapés par le client et lancer le client. 
-\lstinputlisting[inputencoding=utf8/latin1]{./SYSG5-Proj/client.sh}
+\lstinputlisting[inputencoding=utf8/latin1]{../SYSG5-Proj/client.sh}
 
 \chapter{Configuration}
 
@@ -183,6 +216,19 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 \end{lstlisting}
 Une fois le fichier ~/.bashrc à jour, vous devez modifier dans le script client.sh et y mettre l'adresse à laquelle vous voulez vous connecter et entrer l'adresse de votre serveur 
 
-\includegraphics[width=100mm]{./resources/adresseServeur.png}
+\includegraphics[width=100mm]{../resources/adresseServeur.png}
 
+\chapter{Conclusion}
+
+Je me suis vraiment beaucoup amusés en codant ce projet. Tant au niveau du code qu'au niveau de la recherche. J'etais au début un peu réticent quant au langage c puisque c'est un langage que je ne connais que très peu. Je ne savais pas qu'on pouvait choisir le langage. Mais au final, cela s'est avéré bénéfique puisque j'ai passé du temps à rechercher pleins de chose et au final j'ai vu des choses que je n'ai même pas utilisés. 
+J'ai perdu énormément de temps du fait que je n'etais tout seul et donc j'avais rarement un regard extérieur ce qui m'a bloqué sur de bêtes erreurs et blocage. Ca m'a donc permis de ne compter que sur moi.
+J'ai rencontré quelques problèmes : 
+\begin{itemize}
+            \item J'ai tenté de rendre la demande du nombre de commandes au client interctive notamment grâce à la méthode getLastLinesInHistory qui me permet d'avoir le nombre de commandes totale (dans le cas ou je chargeai tout l'historique sans passer par le read dans un script). Ensuite en ayant le nombre de commandes totale, je demandais interactivement au client le nombre de commandes qu'il voulait . Je faisais ensuite un calcul simple soit le nombre de commandes totale - le nombre de commande voulu par le client ce qui me donnait un nombre "n" . J'avancais ensuite dans le fichier history.txt (ou se trouve l'historique) de n lignes. mais le souci c'est que j'ai une erreur de type segmentation fault. Je suis resté 2h30 devant ce problème sans solution.
+	    \item  Lors de la connexion d'un client la première commande exécuté ne fonctionne pas toujours
+	    \item quand le client entre un nombre de commandes trop grand , la lecture/ecriture coté serveur se passe mal.
+\end{itemize}
+
+
+ 
 \end{document}

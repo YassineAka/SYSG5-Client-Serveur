@@ -1,0 +1,24 @@
+#NOM    : makefile
+#CLASSE : RAPPORT - SysG5
+#OBJET  : Rapport Project SysG5 : Time Setup
+#HOWTO    : make; make clean
+#AUTEUR    : 42933 Achetouan Mohammed - 45682 Kardillo Younes 
+
+all: pdf clean
+
+pdf: 
+	pdflatex latex/tmp.tex
+	evince tmp.pdf &
+
+%.pdf: %.tex
+	rubber -m pdftex latex/$<
+
+clean:
+	rm -f latex/.toc latex/.aux latex/.log latex/.out
+
+cleanall:
+	rm -f latex/.toc latex/.pdf latex/.aux latex/.log latex/*.out
+
+.PHONY: all pdf clean cleanall
+
+.SILENT: pdf
